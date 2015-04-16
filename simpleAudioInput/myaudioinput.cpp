@@ -31,8 +31,10 @@ myAudioInput::myAudioInput(QObject *parent) :
     myBuffer = new QBuffer(myByteArray);
     myBuffer->open(QIODevice::ReadWrite);
    // connect(audio,SIGNAL(notify()),this,SLOT(readData()));
+    myDevice = new myInputIODevice(format,this);
+    myDevice->open(QIODevice::ReadWrite);
     audio->setNotifyInterval(500);
-    audio->start(&myDevice);
+    audio->start(myDevice);
     QTimer::singleShot(1000,this,SLOT(stopRecording()));
 }
 

@@ -58,7 +58,7 @@ private:
     QDataStream *myDataStream;
     QVector<float> *myVector;
     QFile myFile;
-    myInputIODevice myDevice;
+    myInputIODevice *myDevice;
 };
 
 
