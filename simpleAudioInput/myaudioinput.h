@@ -53,7 +53,7 @@ public slots:
 private:
     QAudioInput *audio;
     QIODevice *myIODevice;
-    QBuffer *myBuffer;
+  //  QBuffer *myBuffer;
     QByteArray *myByteArray;
     QDataStream *myDataStream;
     QVector<float> *myVector;

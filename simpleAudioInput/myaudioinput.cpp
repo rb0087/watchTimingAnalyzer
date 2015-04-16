@@ -23,16 +23,10 @@ myAudioInput::myAudioInput(QObject *parent) :
     audio = new QAudioInput(format,this);
     audio->setBufferSize(1024);
     connect(audio,SIGNAL(stateChanged(QAudio::State)),this,SLOT(handleStateChanged(QAudio::State)));
-    //myIODevice = new QIODevice(this);
-   // myIODevice->open(QIODevice::ReadWrite);
-    myByteArray = new QByteArray();
-    myByteArray->resize(44100*4);
-    myByteArray->fill('\0');
-    myBuffer = new QBuffer(myByteArray);
-    myBuffer->open(QIODevice::ReadWrite);
    // connect(audio,SIGNAL(notify()),this,SLOT(readData()));
     myDevice = new myInputIODevice(format,this);
     myDevice->open(QIODevice::ReadWrite);
+    myDevice->start();
     audio->setNotifyInterval(500);
     audio->start(myDevice);
     QTimer::singleShot(1000,this,SLOT(stopRecording()));
@@ -41,6 +35,7 @@ myAudioInput::myAudioInput(QObject *parent) :
 void myAudioInput::readData()
 {
     qDebug()<<"In read data function.";
+    /* Buffer-related stuff.
     myBuffer->waitForReadyRead(4000);
     char* myData = (char*)malloc(sizeof(float)*44100);
     myBuffer->peek(myData,44100);
@@ -52,6 +47,7 @@ void myAudioInput::readData()
     myBuffer->seek(0);
     qDebug() << myBuffer->size();
     QDataStream myStream(myBuffer);
+    */
     //QDataStream myStream(myByteArray,QIODevice::ReadOnly);
     //QVector<float> data(44110;
     //qDebug() << myStream;
@@ -69,8 +65,8 @@ void myAudioInput::readData()
 void myAudioInput::stopRecording()
 {
     qDebug() << "reached stop recording class.";
-    readData();
-    myBuffer->close();
+   // readData();
+   // myBuffer->close();
     audio->stop();
     delete audio;
 }
