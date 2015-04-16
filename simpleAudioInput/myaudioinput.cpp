@@ -173,6 +173,7 @@ qint64 myInputIODevice::readData(char *data, qint64 maxlen)
 qint64 myInputIODevice::writeData(const char *data, qint64 len)
 {
     if (maxAmplitude) {
+        qDebug() << "Sample size is: " <<myAudioFormat.sampleSize() << "\n";
         Q_ASSERT(myAudioFormat.sampleSize() % 8 == 0);
         const int channelBytes = myAudioFormat.sampleSize() / 8;
         const int sampleBytes = myAudioFormat.channelCount() * channelBytes;
