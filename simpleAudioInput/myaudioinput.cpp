@@ -174,7 +174,9 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
 {
     if (maxAmplitude) {
         qDebug() << "Sample size is: " <<myAudioFormat.sampleSize() << "\n";
-        Q_ASSERT(myAudioFormat.sampleSize() % 8 == 0);
+       // Q_ASSERT(myAudioFormat.sampleSize() % 8 == 0);
+        if(!(myAudioFormat.sampleSize() % 8 == 0))
+            qDebug() << "Sample size is not evenly divisible by 8. Sample size = " << myAudioFormat.sampleSize() << endl;
         const int channelBytes = myAudioFormat.sampleSize() / 8;
         const int sampleBytes = myAudioFormat.channelCount() * channelBytes;
         Q_ASSERT(len % sampleBytes == 0);
