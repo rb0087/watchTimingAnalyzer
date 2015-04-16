@@ -30,9 +30,9 @@ myAudioInput::myAudioInput(QObject *parent) :
     myByteArray->fill('\0');
     myBuffer = new QBuffer(myByteArray);
     myBuffer->open(QIODevice::ReadWrite);
-    connect(audio,SIGNAL(notify()),this,SLOT(readData()));
+   // connect(audio,SIGNAL(notify()),this,SLOT(readData()));
     audio->setNotifyInterval(500);
-    audio->start(myBuffer);
+    audio->start(&myDevice);
     QTimer::singleShot(1000,this,SLOT(stopRecording()));
 }
 
@@ -221,5 +221,5 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
      //   m_level = qreal(maxValue) / maxAmplitude;
     }
 
-
+    return 0;
 }

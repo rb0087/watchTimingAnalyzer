@@ -13,27 +13,6 @@
 #include <QFile>
 #include <QBuffer>
 #include <QtEndian>
-class myAudioInput : public QObject
-{
-    Q_OBJECT
-public:
-    explicit myAudioInput(QObject *parent = 0);
-
-signals:
-
-public slots:
-    void stopRecording();
-    void handleStateChanged(QAudio::State);
-    void readData();
-private:
-    QAudioInput *audio;
-    QIODevice *myIODevice;
-    QBuffer *myBuffer;
-    QByteArray *myByteArray;
-    QDataStream *myDataStream;
-    QVector<float> *myVector;
-    QFile myFile;
-};
 
 class myInputIODevice : public QIODevice
 {
@@ -58,5 +37,29 @@ private:
     const QAudioFormat myAudioFormat;
 
 };
+
+class myAudioInput : public QObject
+{
+    Q_OBJECT
+public:
+    explicit myAudioInput(QObject *parent = 0);
+
+signals:
+
+public slots:
+    void stopRecording();
+    void handleStateChanged(QAudio::State);
+    void readData();
+private:
+    QAudioInput *audio;
+    QIODevice *myIODevice;
+    QBuffer *myBuffer;
+    QByteArray *myByteArray;
+    QDataStream *myDataStream;
+    QVector<float> *myVector;
+    QFile myFile;
+    myInputIODevice myDevice;
+};
+
 
 #endif // MYAUDIOINPUT_H
