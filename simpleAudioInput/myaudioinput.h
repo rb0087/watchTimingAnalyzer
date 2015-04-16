@@ -12,6 +12,7 @@
 #include <QIODevice>
 #include <QFile>
 #include <QBuffer>
+#include <QtEndian>
 class myAudioInput : public QObject
 {
     Q_OBJECT
@@ -47,12 +48,12 @@ public:
 
     qint64 readData(char *data, qint64 maxlen);
     qint64 writeData(const char *data, qint64 len);
-    QVector myAudioData;
+  //  QVector<float> myAudioData;
 
 
 private:
     quint32 maxAmplitude;
-    QVector myAudioData;
+    QVector<float> myAudioData;
 
     const QAudioFormat myAudioFormat;
 
