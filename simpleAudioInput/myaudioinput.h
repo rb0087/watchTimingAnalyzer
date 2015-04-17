@@ -28,13 +28,13 @@ public:
     qint64 readData(char *data, qint64 maxlen);
     qint64 writeData(const char *data, qint64 len);
   //  QVector<float> myAudioData;
+    const QAudioFormat myAudioFormat;
 
 
 private:
-    quint32 maxAmplitude;
+    quint32 myMaxAmplitude;
     QVector<float> myAudioData;
 
-    const QAudioFormat myAudioFormat;
 
 };
 
@@ -50,6 +50,7 @@ public slots:
     void stopRecording();
     void handleStateChanged(QAudio::State);
     void readData();
+    void notified();
 private:
     QAudioInput *audio;
     QIODevice *myIODevice;

@@ -20,16 +20,24 @@ myAudioInput::myAudioInput(QObject *parent) :
     }
     else
         qDebug() << "Format supported!\n";
-    audio = new QAudioInput(format,this);
-    audio->setBufferSize(1024);
+    audio = new QAudioInput(info,format,this);
+    audio->setBufferSize(8192);
     connect(audio,SIGNAL(stateChanged(QAudio::State)),this,SLOT(handleStateChanged(QAudio::State)));
-   // connect(audio,SIGNAL(notify()),this,SLOT(readData()));
+    connect(audio,SIGNAL(notify()),this,SLOT(notified()));
     myDevice = new myInputIODevice(format,this);
-    myDevice->open(QIODevice::ReadWrite);
+  //  myDevice->open(QIODevice::WriteOnly);
+
     myDevice->start();
-    audio->setNotifyInterval(500);
+    audio->setNotifyInterval(50);
     audio->start(myDevice);
     QTimer::singleShot(1000,this,SLOT(stopRecording()));
+}
+
+void myAudioInput::notified()
+{
+    qWarning() << "bytesReady = " << audio->bytesReady()
+               << ", " << "elapsedUSecs = " <<audio->elapsedUSecs()
+               << ", " << "processedUSecs = "<<audio->processedUSecs();
 }
 
 void myAudioInput::readData()
@@ -95,17 +103,18 @@ void myAudioInput::handleStateChanged(QAudio::State state)
     }
 }
 
-myInputIODevice::myInputIODevice (const QAudioFormat &format, QObject *parent)
+myInputIODevice::myInputIODevice (const QAudioFormat &format, QObject *parent) :   QIODevice(parent)
+  ,   myAudioFormat(format), myMaxAmplitude(0x7fffffff)
 {
 
             switch (format.sampleSize()) {
             case 8:
                 switch (format.sampleType()) {
                 case QAudioFormat::UnSignedInt:
-                    maxAmplitude = 255;
+                    myMaxAmplitude = 255;
                     break;
                 case QAudioFormat::SignedInt:
-                    maxAmplitude = 127;
+                    myMaxAmplitude = 127;
                     break;
                 default:
                     break;
@@ -114,10 +123,10 @@ myInputIODevice::myInputIODevice (const QAudioFormat &format, QObject *parent)
             case 16:
                 switch (format.sampleType()) {
                 case QAudioFormat::UnSignedInt:
-                    maxAmplitude = 65535;
+                    myMaxAmplitude = 65535;
                     break;
                 case QAudioFormat::SignedInt:
-                    maxAmplitude = 32767;
+                    myMaxAmplitude = 32767;
                     break;
                 default:
                     break;
@@ -127,13 +136,13 @@ myInputIODevice::myInputIODevice (const QAudioFormat &format, QObject *parent)
             case 32:
                 switch (format.sampleType()) {
                 case QAudioFormat::UnSignedInt:
-                    maxAmplitude = 0xffffffff;
+                    myMaxAmplitude = 0xffffffff;
                     break;
                 case QAudioFormat::SignedInt:
-                    maxAmplitude = 0x7fffffff;
+                    myMaxAmplitude = 0x7fffffff;
                     break;
                 case QAudioFormat::Float:
-                    maxAmplitude = 0x7fffffff; // Kind of
+                    myMaxAmplitude = 0x7fffffff; // Kind of
                 default:
                     break;
                 }
@@ -168,12 +177,12 @@ qint64 myInputIODevice::readData(char *data, qint64 maxlen)
 
 qint64 myInputIODevice::writeData(const char *data, qint64 len)
 {
-    if(len <= 0 )
+    if(len <= 0 || myAudioFormat.sampleSize()<=0)
     {
-        qDebug() << "In writeData function, length was less than or equal to zero. Len = " << len << endl;
+        qDebug() << "In writeData function, length or sample size was less than or equal to zero. Len = " << len << "sample size: " << myAudioFormat.sampleSize() <<endl;
         return -1;
     }
-    if (maxAmplitude) {
+    if (myMaxAmplitude) {
         qDebug() << "Sample size is: " <<myAudioFormat.sampleSize() << "\n";
         Q_ASSERT(myAudioFormat.sampleSize() % 8 == 0);
         const int channelBytes = myAudioFormat.sampleSize() / 8;
@@ -215,13 +224,14 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
                 } else if (myAudioFormat.sampleSize() == 32 && myAudioFormat.sampleType() == QAudioFormat::Float) {
                     value = qAbs(*reinterpret_cast<const float*>(ptr) * 0x7fffffff); // assumes 0-1.0
                 }
-
+                qDebug() << value;
                 maxValue = qMax(value, maxValue);
                 ptr += channelBytes;
             }
         }
 
-        maxValue = qMin(maxValue, maxAmplitude);
+        maxValue = qMin(maxValue, myMaxAmplitude);
+        qDebug() << "Max value = " << maxValue << endl;
      //   m_level = qreal(maxValue) / maxAmplitude;
     }
 
