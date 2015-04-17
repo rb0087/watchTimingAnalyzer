@@ -9,7 +9,7 @@ myAudioInput::myAudioInput(QObject *parent) :
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleType(QAudioFormat::Float);
+    format.setSampleType(QAudioFormat::SignedInt);
     QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
     qDebug() << "Just created instance of qaudiodeviceinfo.";
     qDebug() << "Defualt is " << info.deviceName();
@@ -21,7 +21,7 @@ myAudioInput::myAudioInput(QObject *parent) :
     else
         qDebug() << "Format supported!\n";
     audio = new QAudioInput(info,format,this);
-    audio->setBufferSize(8192);
+    audio->setBufferSize(2048);
     connect(audio,SIGNAL(stateChanged(QAudio::State)),this,SLOT(handleStateChanged(QAudio::State)));
     connect(audio,SIGNAL(notify()),this,SLOT(notified()));
     myDevice = new myInputIODevice(format,this);
@@ -230,7 +230,7 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
             }
         }
 
-        maxValue = qMin(maxValue, myMaxAmplitude);
+      //  maxValue = qMin(maxValue, myMaxAmplitude);
         qDebug() << "Max value = " << maxValue << endl;
      //   m_level = qreal(maxValue) / maxAmplitude;
     }
