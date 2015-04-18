@@ -25,7 +25,6 @@ myAudioInput::myAudioInput(QObject *parent) :
     connect(audio,SIGNAL(stateChanged(QAudio::State)),this,SLOT(handleStateChanged(QAudio::State)));
     connect(audio,SIGNAL(notify()),this,SLOT(notified()));
     myDevice = new myInputIODevice(format,this);
-  //  myDevice->open(QIODevice::WriteOnly);
 
     myDevice->start();
     audio->setNotifyInterval(50);
@@ -43,30 +42,7 @@ void myAudioInput::notified()
 void myAudioInput::readData()
 {
     qDebug()<<"In read data function.";
-    /* Buffer-related stuff.
-    myBuffer->waitForReadyRead(4000);
-    char* myData = (char*)malloc(sizeof(float)*44100);
-    myBuffer->peek(myData,44100);
-    for(int ii = 0; ii<1;ii++)
-        printf("%f    \n",*((float*)(myData+2*ii)));
 
-    qDebug() << myData;
-    free(myData);
-    myBuffer->seek(0);
-    qDebug() << myBuffer->size();
-    QDataStream myStream(myBuffer);
-    */
-    //QDataStream myStream(myByteArray,QIODevice::ReadOnly);
-    //QVector<float> data(44110;
-    //qDebug() << myStream;
-    //qDebug() << *myByteArray;
-
-    //myStream >> data;
-    //qDebug() << "Data length is " << data.length() ;
-   // for(int ii = 0; ii< data.length();ii++)
-    //    qDebug() << data[ii];
-    //for(int ii = 0; ii< 10;ii++)
-     //   qDebug() << myByteArray->at(ii);
 
 }
 
@@ -183,7 +159,6 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
         return -1;
     }
     if (myMaxAmplitude) {
-        qDebug() << "Sample size is: " <<myAudioFormat.sampleSize() << "\n";
         Q_ASSERT(myAudioFormat.sampleSize() % 8 == 0);
         const int channelBytes = myAudioFormat.sampleSize() / 8;
         const int sampleBytes = myAudioFormat.channelCount() * channelBytes;
@@ -231,7 +206,7 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
         }
 
       //  maxValue = qMin(maxValue, myMaxAmplitude);
-        qDebug() << "Max value = " << maxValue << endl;
+     //   qDebug() << "Max value = " << maxValue << endl;
      //   m_level = qreal(maxValue) / maxAmplitude;
     }
 
