@@ -190,17 +190,17 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
         Q_ASSERT(len % sampleBytes == 0);
         const int numSamples = len / sampleBytes;
 
-        quint32 maxValue = 0;
+        qint32 maxValue = 0;
         const unsigned char *ptr = reinterpret_cast<const unsigned char *>(data);
      // const unsigned char *ptr = data;
         for (int i = 0; i < numSamples; ++i) {
             for (int j = 0; j < myAudioFormat.channelCount(); ++j) {
-                quint32 value = 0;
+                qint32 value = 0;
 
                 if (myAudioFormat.sampleSize() == 8 && myAudioFormat.sampleType() == QAudioFormat::UnSignedInt) {
                     value = *reinterpret_cast<const quint8*>(ptr);
                 } else if (myAudioFormat.sampleSize() == 8 && myAudioFormat.sampleType() == QAudioFormat::SignedInt) {
-                    value = qAbs(*reinterpret_cast<const qint8*>(ptr));
+                    value = (*reinterpret_cast<const qint8*>(ptr));
                 } else if (myAudioFormat.sampleSize() == 16 && myAudioFormat.sampleType() == QAudioFormat::UnSignedInt) {
                     if (myAudioFormat.byteOrder() == QAudioFormat::LittleEndian)
                         value = qFromLittleEndian<quint16>(ptr);
@@ -208,9 +208,9 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
                         value = qFromBigEndian<quint16>(ptr);
                 } else if (myAudioFormat.sampleSize() == 16 && myAudioFormat.sampleType() == QAudioFormat::SignedInt) {
                     if (myAudioFormat.byteOrder() == QAudioFormat::LittleEndian)
-                        value = qAbs(qFromLittleEndian<qint16>(ptr));
+                        value = (qFromLittleEndian<qint16>(ptr));
                     else
-                        value = qAbs(qFromBigEndian<qint16>(ptr));
+                        value = (qFromBigEndian<qint16>(ptr));
                 } else if (myAudioFormat.sampleSize() == 32 && myAudioFormat.sampleType() == QAudioFormat::UnSignedInt) {
                     if (myAudioFormat.byteOrder() == QAudioFormat::LittleEndian)
                         value = qFromLittleEndian<quint32>(ptr);
@@ -218,9 +218,9 @@ qint64 myInputIODevice::writeData(const char *data, qint64 len)
                         value = qFromBigEndian<quint32>(ptr);
                 } else if (myAudioFormat.sampleSize() == 32 && myAudioFormat.sampleType() == QAudioFormat::SignedInt) {
                     if (myAudioFormat.byteOrder() == QAudioFormat::LittleEndian)
-                        value = qAbs(qFromLittleEndian<qint32>(ptr));
+                        value = (qFromLittleEndian<qint32>(ptr));
                     else
-                        value = qAbs(qFromBigEndian<qint32>(ptr));
+                        value = (qFromBigEndian<qint32>(ptr));
                 } else if (myAudioFormat.sampleSize() == 32 && myAudioFormat.sampleType() == QAudioFormat::Float) {
                     value = qAbs(*reinterpret_cast<const float*>(ptr) * 0x7fffffff); // assumes 0-1.0
                 }
